@@ -1,0 +1,2 @@
+# Projeto_2-Estruturas-A
+INDEXADOR E CONTADOR DE PALAVRAS
