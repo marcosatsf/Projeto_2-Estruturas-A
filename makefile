@@ -6,7 +6,6 @@ index:
 	gcc -g -c main.c
 	gcc -g -o projeto2 Item.o ST.o main.o -lm
 	clear
-	echo "Compilado com sucesso!"
 clean:
 	rm -rf Item.h.gch
 	rm -rf ST.h.gch
