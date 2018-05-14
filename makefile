@@ -13,5 +13,5 @@ clean:
 	rm -rf Item.o
 	rm -rf ST.o
 	rm -rf main.o
-	rm -rf ProjetoIndexador
+	rm -rf projeto2
 	clear
