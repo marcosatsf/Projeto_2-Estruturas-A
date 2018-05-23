@@ -36,6 +36,7 @@ typedef struct tipoBloco bloco;
 void adicionaLista(no **primeiro, char *palavra)
 {
 	if (!(*primeiro)) {
+		//printf("Got null pointer to list\n");
 		no *aux = (no *)malloc(sizeof(no));
 		if (!aux) {
 			printf("ERRO\n");
@@ -47,40 +48,52 @@ void adicionaLista(no **primeiro, char *palavra)
 	} else {
 		no *aux = (*primeiro);
 		no *aux2 = (*primeiro);
-		while (aux) {
-			if (strcmp(aux->chave, palavra) > 0) { //continuar andando
+		int foundit = 0;
+		while (aux && foundit == 0) {
+			//printf("Current word is %s\n", aux->chave);
+			if (strcmp(aux->chave, palavra) < 0) { //continuar andando
+				//printf("Will move another step\n");
 				if (aux != (*primeiro)) aux2 = aux2->prox;
 				aux = aux->prox;
 			} else {
 				no *aux3 = (no *)malloc(sizeof(no));
 				if (!aux3) { printf("ERRO\n"); } else {
-					strcpy(aux3->chave, palavra);
-					aux3->prox = aux;
-					aux2->prox = aux3;
+					if (aux == (*primeiro)) {
+						//printf("Was first pos\n");
+						strcpy(aux3->chave, palavra);
+						aux3->prox = aux;
+						(*primeiro) = aux3;
+						//aux2->prox = aux3;
+						foundit = 1;
+					} else {
+						//printf("WASNT first pos\n");
+						strcpy(aux3->chave, palavra);
+						aux3->prox = aux;
+						aux2->prox = aux3;
+						//(*primeiro) = aux3;
+						foundit = 1;
+					}
 				}
 			}
 		}
-		no *aux3 = (no *)malloc(sizeof(no));
-		if (!aux3) { printf("ERRO\n"); } else {
-			strcpy(aux3->chave, palavra);
-			aux3->prox = NULL;
-			aux->prox = aux3;
+		if (foundit == 0) {
+			//printf("Adding at last pos");
+			no *aux3 = (no *)malloc(sizeof(no));
+			if (!aux3) { printf("ERRO\n"); } else {
+				strcpy(aux3->chave, palavra);
+				aux3->prox = NULL;
+				aux2->prox = aux3;
+			}
 		}
 	}
-
-	/*	
-	no *aux = (*no) malloc(sizeof(no));
-	if (!aux) { printf("ERRO\n"); } else {
-		aux->prox = (*primeiro);
-		aux->chave = palavra;
-		(*primeiro) = aux;
-	}
-	*/
 }
 
 no **adicionaBloco(bloco **primeiro, int freq)
 {
-	if (!(*primeiro)) {
+	//printf("Entrou na funcao\n");
+	bloco *teste = (*primeiro);
+	if (teste == NULL) {
+		//printf("Null blocks!\n");
 		bloco *aux = (bloco *)malloc(sizeof(bloco));
 		if (!aux) { printf("ERRO\n"); } else {
 			aux->freq = freq;
@@ -90,11 +103,56 @@ no **adicionaBloco(bloco **primeiro, int freq)
 			return &(aux->prim);
 		}
 	} else {
+		//printf("Found existing blocks\n");
 		bloco *atual = (*primeiro);
-		while (atual) {
-			if (atual->freq == freq) return &(atual->prim);
+		bloco *aux2 = (*primeiro);
+		//int i = 0;
+		while (atual != NULL) {
+			if (atual->freq > freq) {
+				if (atual != (*primeiro)) aux2 = aux2->proxBloco;
+				atual = atual->proxBloco;
+			} else if (atual->freq == freq) {
+				return &(atual->prim);
+			} else { // atual < freq
+				bloco *aux = (bloco *)malloc(sizeof(bloco));
+				if (!aux) { printf("ERRO\n"); } else {
+				aux->freq = freq;
+				aux->prim = NULL;
+					if (atual == (*primeiro)) {
+						aux->proxBloco = (*primeiro);
+						(*primeiro) = aux;
+						return &(aux->prim);
+					} else {
+						aux->proxBloco = atual;
+						aux2->proxBloco = aux;
+						return &(aux->prim);
+					}
+				}
+			}
+			/*
+			//printf("i = %i\n", i);
+			if (atual->freq == freq) {
+				//printf("Found a block with freq %i\n", freq);
+				return &(atual->prim);
+			}// else {
+			else {
+				if(atual->prox!=NULL)
+				{
+					if(atual->prox->freq < freq) { //Add here
+					
+					} else { //keep moving
+						if (atual != (*primeiro)) aux
+					}
+				}
+			}
 			atual = atual->proxBloco;
+			//printf("after %i\n", atual);
+			//}
+			//i++;
+			*/
 		}
+		//printf("Did not find a block with the required freq\n");
+		/*
 		atual = (bloco *)malloc(sizeof(bloco));
 		if (!atual) { printf("ERRO\n"); } else {
 			bloco *aux = (*primeiro);
@@ -102,23 +160,24 @@ no **adicionaBloco(bloco **primeiro, int freq)
 			atual->freq = freq;
 			atual->prim = NULL;
 			atual->proxBloco = NULL;
-			aux->proxBloco = aux;
+			aux->proxBloco = atual;
 			return &(atual->prim);
 		}
+		*/
 	}
-}
-
-void montaListas(bTree *raiz, bloco **primeiro)
-{
-	if (raiz) {
-		adicionaLista(adicionaBloco((*primeiro), raiz->item->freq), raiz->item->chave);
-		montaListas(raiz->left, (*primeiro));
-		montaListas(raiz->right, (*primeiro));
+	bloco *aux2 = (*primeiro); //DEBUG ONLY
+	bloco *aux = (bloco *)malloc(sizeof(bloco));
+	if (!aux) { printf("ERRO\n"); } else {
+		aux->freq = freq;
+		aux->prim = NULL;
+		aux2->proxBloco = aux;
+		return &(aux->prim);
 	}
 }
 
 void testalista(bloco *primeiro)
 {
+	printf("----------------------------------------------\n");
 	while (primeiro) {
 		printf("No de frequencia %i: ", primeiro->freq);
 		no* aux = primeiro->prim;
@@ -128,6 +187,20 @@ void testalista(bloco *primeiro)
 		}
 		printf("\n");
 		primeiro = primeiro->proxBloco;
+	}
+	printf("----------------------------------------------\n");
+}
+
+void montaListas(bTree *raiz, bloco **primeiro)
+{
+	if (raiz) {
+		//printf("Adding %s (%i)\n", raiz->item->chave, raiz->item->freq);
+		no **aux = adicionaBloco(primeiro, raiz->item->freq);
+		//printf("Got the list pointer\n");
+		adicionaLista(aux, raiz->item->chave);
+		//testalista((*primeiro));
+		montaListas(raiz->left, primeiro);
+		montaListas(raiz->right, primeiro);
 	}
 }
 
@@ -259,8 +332,8 @@ void imprimeArvore(int lvl, int max, int code, int override, bTree *raiz){
 	if(lvl<=max){
 		if (raiz) {
 			(override) ? trail(lvl, code + pow(2, lvl - 1)) : trail(lvl, code);
-			if(!lvl) printf("%s\n", raiz->item->chave);
-			else printf("\b- %s\n", raiz->item->chave);
+			if(!lvl) printf("%s (%i)\n", raiz->item->chave, raiz->item->freq);
+			else printf("\b- %s (%i)\n", raiz->item->chave, raiz->item->freq);
 			imprimeArvore(lvl + 1, max, code + pow(2, lvl), 0, raiz->left );
 			imprimeArvore(lvl + 1, max, code              , 1, raiz->right);
 		}
