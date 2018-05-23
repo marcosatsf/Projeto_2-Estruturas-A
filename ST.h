@@ -3,8 +3,6 @@ typedef struct tipoArvore bTree;
 
 void adicionaArvore(bTree **raiz, char *palavra);
 void adicionaArvoreFreq(bTree **raiz, char *palavra, bTree *raizaux);
-//void montaArvore(bTree *raiz, int max, int vez);
-//void imprimeArvore(bTree *raiz, int max);
 //int *updateVB(int *vB, int h);
 void procuraPalavra(bTree *raiz, char *palavra);
 void salvaArquivo(bTree *raiz, char *palavra);

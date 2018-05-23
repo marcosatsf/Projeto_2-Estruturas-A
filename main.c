@@ -1,3 +1,16 @@
+/*
+Integrante 1 - Nome: Bruno Guilherme Marini Spirlandeli 	RA: 17037607
+Integrante 2 - Nome: Caio Lima e Souza Della Torre Sanches 	RA: 17225285
+Integrante 3 - Nome: Gabriela Nelsina Vicente 			RA: 17757089
+Integrante 4 - Nome: Marcos Aurélio Tavares de Sousa Filho 	RA: 17042284
+Resultados obtidos:
+Projeto básico: __% concluído - Obs:
+( ) Opcional 1 - Obs: 
+(X) Opcional 2 - Obs: 
+( ) Opcional 3 - Obs: 
+(X) Opcional 4 - Obs: Realizado com sucesso
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -7,8 +20,7 @@
 
 struct tipoItem {
 	char chave[50];
-	int freq;	
-	struct tipoItem *prox;
+	int freq;
 };
 typedef struct tipoItem Item;
 
@@ -44,9 +56,9 @@ int main(int argc, char **argv)
 		{
 			n = contaN(argv[i], 2);
 			//imprimeArvore(rootWord, n);
-			tree(0,n,0,0,rootWord);
+			imprimeArvore(0,n,0,0,rootWord);
 		}
-		if(argv[i][1]=='b') //em andamento
+		//if(argv[i][1]=='b') em andamento
 	}
 	free(rootWord);
 
