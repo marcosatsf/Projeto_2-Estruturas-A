@@ -48,6 +48,9 @@ int main(int argc, char **argv)
 				adicionaArvore(&rootWord, word);
 				//adicionaArvoreFreq(&rootRatio , word, rootWord);
 			}
+			bloco *prim = NULL;
+			montaListas(rootWord, &prim);
+			testalista(prim);
 		}
 		if(argv[i][1]=='w') salvaArquivo(rootWord, argv[i]+2);
 		else if(argv[i][1]=='r') recuperaArquivo(&rootWord, argv[i]+2);

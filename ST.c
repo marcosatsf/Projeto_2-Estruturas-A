@@ -20,6 +20,117 @@ struct tipoArvore {
 };
 typedef struct tipoArvore bTree;
 
+struct tipoNo {
+	char chave[50];
+	struct tipoNo *prox;
+};
+typedef struct tipoNo no;
+
+struct tipoBloco {
+	int freq;
+	struct tipoBloco *proxBloco;
+	struct tipoNo *prim;
+};
+typedef struct tipoBloco bloco;
+
+void adicionaLista(no **primeiro, char *palavra)
+{
+	if (!(*primeiro)) {
+		no *aux = (no *)malloc(sizeof(no));
+		if (!aux) {
+			printf("ERRO\n");
+		} else {
+			strcpy(aux->chave, palavra);
+			aux->prox = NULL;
+			(*primeiro) = aux;
+		}
+	} else {
+		no *aux = (*primeiro);
+		no *aux2 = (*primeiro);
+		while (aux) {
+			if (strcmp(aux->chave, palavra) > 0) { //continuar andando
+				if (aux != (*primeiro)) aux2 = aux2->prox;
+				aux = aux->prox;
+			} else {
+				no *aux3 = (no *)malloc(sizeof(no));
+				if (!aux3) { printf("ERRO\n"); } else {
+					strcpy(aux3->chave, palavra);
+					aux3->prox = aux;
+					aux2->prox = aux3;
+				}
+			}
+		}
+		no *aux3 = (no *)malloc(sizeof(no));
+		if (!aux3) { printf("ERRO\n"); } else {
+			strcpy(aux3->chave, palavra);
+			aux3->prox = NULL;
+			aux->prox = aux3;
+		}
+	}
+
+	/*	
+	no *aux = (*no) malloc(sizeof(no));
+	if (!aux) { printf("ERRO\n"); } else {
+		aux->prox = (*primeiro);
+		aux->chave = palavra;
+		(*primeiro) = aux;
+	}
+	*/
+}
+
+no **adicionaBloco(bloco **primeiro, int freq)
+{
+	if (!(*primeiro)) {
+		bloco *aux = (bloco *)malloc(sizeof(bloco));
+		if (!aux) { printf("ERRO\n"); } else {
+			aux->freq = freq;
+			aux->prim = NULL;
+			aux->proxBloco = NULL;
+			(*primeiro) = aux;
+			return &(aux->prim);
+		}
+	} else {
+		bloco *atual = (*primeiro);
+		while (atual) {
+			if (atual->freq == freq) return &(atual->prim);
+			atual = atual->proxBloco;
+		}
+		atual = (bloco *)malloc(sizeof(bloco));
+		if (!atual) { printf("ERRO\n"); } else {
+			bloco *aux = (*primeiro);
+			while (aux->proxBloco) aux = aux->proxBloco; 
+			atual->freq = freq;
+			atual->prim = NULL;
+			atual->proxBloco = NULL;
+			aux->proxBloco = aux;
+			return &(atual->prim);
+		}
+	}
+}
+
+void montaListas(bTree *raiz, bloco **primeiro)
+{
+	if (raiz) {
+		adicionaLista(adicionaBloco((*primeiro), raiz->item->freq), raiz->item->chave);
+		montaListas(raiz->left, (*primeiro));
+		montaListas(raiz->right, (*primeiro));
+	}
+}
+
+void testalista(bloco *primeiro)
+{
+	while (primeiro) {
+		printf("No de frequencia %i: ", primeiro->freq);
+		no* aux = primeiro->prim;
+		while (aux) {
+			printf("[%s] ", aux->chave);
+			aux = aux->prox;
+		}
+		printf("\n");
+		primeiro = primeiro->proxBloco;
+	}
+}
+
 void adicionaArvore(bTree **raiz, char *palavra)
 {
 	bTree *auxword= (bTree *)malloc(sizeof(bTree));
@@ -68,7 +179,7 @@ void adicionaArvore(bTree **raiz, char *palavra)
 		}
 	}
 }
-
+/*
 void adicionaArvoreFreq(bTree **raiz, char *palavra){
 	bTree *auxfreq= (bTree *)malloc(sizeof(bTree)), *aux2 = *raiz;
 	if(!auxfreq) printf("Não há espaço disponível!\n");
@@ -86,7 +197,7 @@ void adicionaArvoreFreq(bTree **raiz, char *palavra){
 		else aux2 = auxfreq;
 	}
 }
-
+*/
 void procuraPalavra(bTree *raiz, char *palavra){
 	struct timeval antes , depois;
 	int h=1, diff;

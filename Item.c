@@ -23,7 +23,7 @@ int comparaPalavra(Item *registro, char *palavra){
 }
 
 int verifica(Item *registro, char *palavra){
-	Item *aux = *registro, *aux2 = *registro;
+	Item *aux = registro, *aux2 = registro;
 	if(!registro) return 0;
 	if(!registro->prox)
 	while(aux)
