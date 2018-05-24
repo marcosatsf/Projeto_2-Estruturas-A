@@ -87,16 +87,6 @@ void adicionaLista(no **primeiro, char *palavra)
 		}
 	}
 
-	/*	
-	no *aux = (*no) malloc(sizeof(no));
-	if (!aux) { printf("ERRO\n"); } else {
-		aux->prox = (*primeiro);
-		aux->chave = palavra;
-		(*primeiro) = aux;
-	}
-	*/
-}
-
 no **adicionaBloco(bloco **primeiro, int freq)
 {
 	//printf("Entrou na funcao\n");
@@ -114,29 +104,39 @@ no **adicionaBloco(bloco **primeiro, int freq)
 	} else {
 		//printf("Found existing blocks\n");
 		bloco *atual = (*primeiro);
+		bloco *aux2 = (*primeiro);
 		//int i = 0;
 		while (atual != NULL) {
-			//printf("i = %i\n", i);
-			if (atual->freq == freq) {
-				//printf("Found a block with freq %i\n", freq);
+			if (atual->freq > freq) {
+				if (atual != (*primeiro)) aux2 = aux2->proxBloco;
+				atual = atual->proxBloco;
+			} else if (atual->freq == freq) {
 				return &(atual->prim);
-			}// else {
-			atual = atual->proxBloco;
-			//printf("after %i\n", atual);
-			//}
-			//i++;
+			} else { // atual < freq
+				bloco *aux = (bloco *)malloc(sizeof(bloco));
+				if (!aux) { printf("ERRO\n"); } else {
+				aux->freq = freq;
+				aux->prim = NULL;
+					if (atual == (*primeiro)) {
+						aux->proxBloco = (*primeiro);
+						(*primeiro) = aux;
+						return &(aux->prim);
+					} else {
+						aux->proxBloco = atual;
+						aux2->proxBloco = aux;
+						return &(aux->prim);
+					}
+				}
+			}
 		}
-		//printf("Did not find a block with the required freq\n");
-		atual = (bloco *)malloc(sizeof(bloco));
-		if (!atual) { printf("ERRO\n"); } else {
-			bloco *aux = (*primeiro);
-			while (aux->proxBloco) aux = aux->proxBloco; 
-			atual->freq = freq;
-			atual->prim = NULL;
-			atual->proxBloco = NULL;
-			aux->proxBloco = atual;
-			return &(atual->prim);
-		}
+	}
+	bloco *aux2 = (*primeiro); //DEBUG ONLY
+	bloco *aux = (bloco *)malloc(sizeof(bloco));
+	if (!aux) { printf("ERRO\n"); } else {
+		aux->freq = freq;
+		aux->prim = NULL;
+		aux2->proxBloco = aux;
+		return &(aux->prim);
 	}
 }
 
@@ -154,6 +154,21 @@ void testalista(bloco *primeiro)
 		primeiro = primeiro->proxBloco;
 	}
 	printf("----------------------------------------------\n");
+}
+
+void imprimeN(bloco *primeiro, int n)
+{
+	no *atual = primeiro->prim;
+	while (primeiro && atual && n) {
+		printf("%i %s\n", primeiro->freq, atual->chave);
+		if (n > 0) {
+			if (!(atual->prox)) {
+				primeiro = primeiro->proxBloco;
+				if (primeiro) atual = primeiro->prim;
+			} else atual = atual->prox;
+		}
+		n--;
+	}
 }
 
 void montaListas(bTree *raiz, bloco **primeiro)
