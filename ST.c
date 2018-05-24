@@ -86,6 +86,7 @@ void adicionaLista(no **primeiro, char *palavra)
 			}
 		}
 	}
+}
 
 no **adicionaBloco(bloco **primeiro, int freq)
 {
@@ -322,5 +323,5 @@ void imprimeArvore(int lvl, int max, int code, int override, bTree *raiz){
 			printf("\b- NULL\n");
 		}
 	}
-} 
+}
 

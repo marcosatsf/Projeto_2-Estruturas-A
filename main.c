@@ -50,7 +50,8 @@ int main(int argc, char **argv)
 			}
 			bloco *prim = NULL;
 			montaListas(rootWord, &prim);
-			testalista(prim);
+			//testalista(prim);
+			imprimeN(prim, n);
 		}
 		if(argv[i][1]=='w') salvaArquivo(rootWord, argv[i]+2);
 		else if(argv[i][1]=='r') recuperaArquivo(&rootWord, argv[i]+2);
