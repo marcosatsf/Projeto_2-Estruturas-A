@@ -17,3 +17,4 @@ void adicionaLista(no **primeiro, char *palavra);
 no **adicionaBloco(bloco **primeiro, int freq);
 void montaListas(bTree *raiz, bloco **primeiro);
 void testalista(bloco *primeiro);
+void imprimeN(bloco *primeiro, int n);

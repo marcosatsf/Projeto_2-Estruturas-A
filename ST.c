@@ -191,6 +191,21 @@ void testalista(bloco *primeiro)
 	printf("----------------------------------------------\n");
 }
 
+void imprimeN(bloco *primeiro, int n)
+{
+	no *atual = primeiro->prim;
+	while (primeiro && atual && n) {
+		printf("%i %s\n", primeiro->freq, atual->chave);
+		if (n > 0) {
+			if (!(atual->prox)) {
+				primeiro = primeiro->proxBloco;
+				if (primeiro) atual = primeiro->prim;
+			} else atual = atual->prox;
+		}
+		n--;
+	}
+}
+
 void montaListas(bTree *raiz, bloco **primeiro)
 {
 	if (raiz) {
