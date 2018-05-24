@@ -86,7 +86,6 @@ void adicionaLista(no **primeiro, char *palavra)
 			}
 		}
 	}
-}
 
 no **adicionaBloco(bloco **primeiro, int freq)
 {
@@ -129,41 +128,7 @@ no **adicionaBloco(bloco **primeiro, int freq)
 					}
 				}
 			}
-			/*
-			//printf("i = %i\n", i);
-			if (atual->freq == freq) {
-				//printf("Found a block with freq %i\n", freq);
-				return &(atual->prim);
-			}// else {
-			else {
-				if(atual->prox!=NULL)
-				{
-					if(atual->prox->freq < freq) { //Add here
-					
-					} else { //keep moving
-						if (atual != (*primeiro)) aux
-					}
-				}
-			}
-			atual = atual->proxBloco;
-			//printf("after %i\n", atual);
-			//}
-			//i++;
-			*/
 		}
-		//printf("Did not find a block with the required freq\n");
-		/*
-		atual = (bloco *)malloc(sizeof(bloco));
-		if (!atual) { printf("ERRO\n"); } else {
-			bloco *aux = (*primeiro);
-			while (aux->proxBloco) aux = aux->proxBloco; 
-			atual->freq = freq;
-			atual->prim = NULL;
-			atual->proxBloco = NULL;
-			aux->proxBloco = atual;
-			return &(atual->prim);
-		}
-		*/
 	}
 	bloco *aux2 = (*primeiro); //DEBUG ONLY
 	bloco *aux = (bloco *)malloc(sizeof(bloco));
