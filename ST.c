@@ -1,3 +1,4 @@
+#define TRAILSIZE 100
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,6 +6,13 @@
 #include "Item.h"
 #include <math.h>
 #include <unistd.h>
+
+struct tipoTrail {
+	char trail[TRAILSIZE];
+	//int size;
+	int cpos;
+};
+typedef struct tipoTrail trailing;
 
 struct tipoItem {
 	char chave[50];
@@ -86,6 +94,7 @@ void adicionaLista(no **primeiro, char *palavra)
 			}
 		}
 	}
+}
 
 no **adicionaBloco(bloco **primeiro, int freq)
 {
@@ -301,14 +310,14 @@ void recuperaArquivo(bTree **raiz, char *palavra){//não terminada
 	fclose(p);
 }
 
-void trail(int lvl, int code){
+void trail(int lvl, double code){
 	if (lvl) {
-		(code % 2) ? printf("| ") : printf("  ");
-		trail(lvl - 1, (int) code/2);
+		((long long int)code % 2) ? printf("| ") : printf("  ");
+		trail(lvl - 1, (long long int) code/2);
 	}
 }
 
-void imprimeArvore(int lvl, int max, int code, int override, bTree *raiz){
+void imprimeArvore(int lvl, int max, double code, int override, bTree *raiz){
 	if(lvl<=max){
 		if (raiz) {
 			(override) ? trail(lvl, code + pow(2, lvl - 1)) : trail(lvl, code);
@@ -322,5 +331,32 @@ void imprimeArvore(int lvl, int max, int code, int override, bTree *raiz){
 			printf("\b- NULL\n");
 		}
 	}
-} 
+}
+
+void push(trailing *t, char c) {
+	t->trail[t->cpos++] = c;
+	t->trail[t->cpos] = '\0';
+}
+char pop(trailing *t) { 
+	char c = t->trail[t->cpos--];
+	t->trail[t->cpos] = '\0';
+	return c;
+}
+
+void trailBeta(int c, int max, trailing *t, bTree *raiz){
+	if (c <= max) {
+		if (raiz) {
+			push(t, '|');
+			printf("%s- %s\n", t->trail, raiz->item->chave);
+			trailBeta(c + 1, max, t, raiz->left);
+			pop(t);
+			push(t, ' ');
+			trailBeta(c + 1, max, t, raiz->right);
+		} else {
+			printf("%s- NULL\n", t->trail);
+			pop(t);
+		}
+	}
+}
+
 

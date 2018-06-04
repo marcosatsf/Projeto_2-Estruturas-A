@@ -5,6 +5,7 @@ index:
 	gcc -g -c ST.c -lm
 	gcc -g -c main.c
 	gcc -g -o ProjetoIndexador Item.o ST.o main.o -lm
+	clear
 	echo "Compilado com sucesso!"
 clean:
 	rm -rf Item.h.gch

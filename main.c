@@ -11,12 +11,20 @@ Projeto básico: __% concluído - Obs:
 (X) Opcional 4 - Obs: Realizado com sucesso
 */
 
+#define TRAILSIZE 100
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
 #include "ST.h"
 #include "Item.h"
+
+struct tipoTrail {
+	char trail[TRAILSIZE];
+	//int size;
+	int cpos;
+};
+typedef struct tipoTrail trailing;
 
 struct tipoItem {
 	char chave[50];
@@ -50,16 +58,24 @@ int main(int argc, char **argv)
 			}
 			bloco *prim = NULL;
 			montaListas(rootWord, &prim);
-			testalista(prim);
+			//testalista(prim);
+			imprimeN(prim, n);
 		}
 		if(argv[i][1]=='w') salvaArquivo(rootWord, argv[i]+2);
 		else if(argv[i][1]=='r') recuperaArquivo(&rootWord, argv[i]+2);
 		if(argv[i][1]=='s') procuraPalavra(rootWord, argv[i]+2);
 		if(argv[i][1]=='p' && argv[i][2]>'0' && argv[i][2]<='9')
 		{
+			trailing *t = (trailing *)malloc(sizeof(trailing));
+			//strcpy(t->trail, "|");
+			//t->cpos = 1;
+			//t->size = 1;
 			n = contaN(argv[i], 2);
 			//imprimeArvore(rootWord, n);
-			imprimeArvore(0,n,0,0,rootWord);
+			
+			//imprimeArvore(0,n,0,0,rootWord);
+			trailBeta(0, n, t,  rootWord);			
+			free(t);
 		}
 		//if(argv[i][1]=='b') em andamento
 	}
