@@ -10,8 +10,8 @@ void adicionaArvore(bTree **raiz, char *palavra);
 void procuraPalavra(bTree *raiz, char *palavra);
 void salvaArquivo(bTree *raiz, char *palavra);
 void recuperaArquivo(bTree **raiz, char *palavra);
-void trail(int lvl, int code);
-void imprimeArvore(int lvl, int max, int code, int override, bTree *raiz);
+void trail(int lvl, double code);
+void imprimeArvore(int lvl, int max, double code, int override, bTree *raiz);
 
 void adicionaLista(no **primeiro, char *palavra);
 no **adicionaBloco(bloco **primeiro, int freq);

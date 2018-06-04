@@ -302,14 +302,14 @@ void recuperaArquivo(bTree **raiz, char *palavra){//não terminada
 	fclose(p);
 }
 
-void trail(int lvl, int code){
+void trail(int lvl, double code){
 	if (lvl) {
-		(code % 2) ? printf("| ") : printf("  ");
-		trail(lvl - 1, (int) code/2);
+		((long long int)code % 2) ? printf("| ") : printf("  ");
+		trail(lvl - 1, (long long int) code/2);
 	}
 }
 
-void imprimeArvore(int lvl, int max, int code, int override, bTree *raiz){
+void imprimeArvore(int lvl, int max, double code, int override, bTree *raiz){
 	if(lvl<=max){
 		if (raiz) {
 			(override) ? trail(lvl, code + pow(2, lvl - 1)) : trail(lvl, code);
