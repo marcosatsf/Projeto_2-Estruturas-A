@@ -4,6 +4,7 @@
 #include <sys/time.h>
 #include "Item.h"
 #include <math.h>
+#include <unistd.h>
 
 struct tipoItem {
 	char chave[50];
@@ -19,6 +20,171 @@ struct tipoArvore {
 };
 typedef struct tipoArvore bTree;
 
+struct tipoNo {
+	char chave[50];
+	struct tipoNo *prox;
+};
+typedef struct tipoNo no;
+
+struct tipoBloco {
+	int freq;
+	struct tipoBloco *proxBloco;
+	struct tipoNo *prim;
+};
+typedef struct tipoBloco bloco;
+
+void adicionaLista(no **primeiro, char *palavra)
+{
+	if (!(*primeiro)) {
+		//printf("Got null pointer to list\n");
+		no *aux = (no *)malloc(sizeof(no));
+		if (!aux) {
+			printf("ERRO\n");
+		} else {
+			strcpy(aux->chave, palavra);
+			aux->prox = NULL;
+			(*primeiro) = aux;
+		}
+	} else {
+		no *aux = (*primeiro);
+		no *aux2 = (*primeiro);
+		int foundit = 0;
+		while (aux && foundit == 0) {
+			//printf("Current word is %s\n", aux->chave);
+			if (strcmp(aux->chave, palavra) < 0) { //continuar andando
+				//printf("Will move another step\n");
+				if (aux != (*primeiro)) aux2 = aux2->prox;
+				aux = aux->prox;
+			} else {
+				no *aux3 = (no *)malloc(sizeof(no));
+				if (!aux3) { printf("ERRO\n"); } else {
+					if (aux == (*primeiro)) {
+						//printf("Was first pos\n");
+						strcpy(aux3->chave, palavra);
+						aux3->prox = aux;
+						(*primeiro) = aux3;
+						//aux2->prox = aux3;
+						foundit = 1;
+					} else {
+						//printf("WASNT first pos\n");
+						strcpy(aux3->chave, palavra);
+						aux3->prox = aux;
+						aux2->prox = aux3;
+						//(*primeiro) = aux3;
+						foundit = 1;
+					}
+				}
+			}
+		}
+		if (foundit == 0) {
+			//printf("Adding at last pos");
+			no *aux3 = (no *)malloc(sizeof(no));
+			if (!aux3) { printf("ERRO\n"); } else {
+				strcpy(aux3->chave, palavra);
+				aux3->prox = NULL;
+				aux2->prox = aux3;
+			}
+		}
+	}
+}
+
+no **adicionaBloco(bloco **primeiro, int freq)
+{
+	//printf("Entrou na funcao\n");
+	bloco *teste = (*primeiro);
+	if (teste == NULL) {
+		//printf("Null blocks!\n");
+		bloco *aux = (bloco *)malloc(sizeof(bloco));
+		if (!aux) { printf("ERRO\n"); } else {
+			aux->freq = freq;
+			aux->prim = NULL;
+			aux->proxBloco = NULL;
+			(*primeiro) = aux;
+			return &(aux->prim);
+		}
+	} else {
+		//printf("Found existing blocks\n");
+		bloco *atual = (*primeiro);
+		bloco *aux2 = (*primeiro);
+		//int i = 0;
+		while (atual != NULL) {
+			if (atual->freq > freq) {
+				if (atual != (*primeiro)) aux2 = aux2->proxBloco;
+				atual = atual->proxBloco;
+			} else if (atual->freq == freq) {
+				return &(atual->prim);
+			} else { // atual < freq
+				bloco *aux = (bloco *)malloc(sizeof(bloco));
+				if (!aux) { printf("ERRO\n"); } else {
+				aux->freq = freq;
+				aux->prim = NULL;
+					if (atual == (*primeiro)) {
+						aux->proxBloco = (*primeiro);
+						(*primeiro) = aux;
+						return &(aux->prim);
+					} else {
+						aux->proxBloco = atual;
+						aux2->proxBloco = aux;
+						return &(aux->prim);
+					}
+				}
+			}
+		}
+	}
+	bloco *aux2 = (*primeiro); //DEBUG ONLY
+	bloco *aux = (bloco *)malloc(sizeof(bloco));
+	if (!aux) { printf("ERRO\n"); } else {
+		aux->freq = freq;
+		aux->prim = NULL;
+		aux2->proxBloco = aux;
+		return &(aux->prim);
+	}
+}
+
+void testalista(bloco *primeiro)
+{
+	printf("----------------------------------------------\n");
+	while (primeiro) {
+		printf("No de frequencia %i: ", primeiro->freq);
+		no* aux = primeiro->prim;
+		while (aux) {
+			printf("[%s] ", aux->chave);
+			aux = aux->prox;
+		}
+		printf("\n");
+		primeiro = primeiro->proxBloco;
+	}
+	printf("----------------------------------------------\n");
+}
+
+void imprimeN(bloco *primeiro, int n)
+{
+	no *atual = primeiro->prim;
+	while (primeiro && atual && n) {
+		printf("%i %s\n", primeiro->freq, atual->chave);
+		if (n > 0) {
+			if (!(atual->prox)) {
+				primeiro = primeiro->proxBloco;
+				if (primeiro) atual = primeiro->prim;
+			} else atual = atual->prox;
+		}
+		n--;
+	}
+}
+
+void montaListas(bTree *raiz, bloco **primeiro)
+{
+	if (raiz) {
+		//printf("Adding %s (%i)\n", raiz->item->chave, raiz->item->freq);
+		no **aux = adicionaBloco(primeiro, raiz->item->freq);
+		//printf("Got the list pointer\n");
+		adicionaLista(aux, raiz->item->chave);
+		//testalista((*primeiro));
+		montaListas(raiz->left, primeiro);
+		montaListas(raiz->right, primeiro);
+	}
+}
+
 void adicionaArvore(bTree **raiz, char *palavra)
 {
 	bTree *auxword= (bTree *)malloc(sizeof(bTree));
@@ -29,19 +195,19 @@ void adicionaArvore(bTree **raiz, char *palavra)
 		auxword->item = insereItem(palavra);
 		while(aux2)
 		{
-			if(strcmp(aux2->item->chave,palavra)>0)
+			if(comparaPalavra(aux2->item,palavra)<0)
 			{
 				auxDesloca=aux2;
 				aux2=aux2->right;
 			}
 			else{
-				if(strcmp(aux2->item->chave,palavra)<0)
+				if(comparaPalavra(aux2->item,palavra)>0)
 				{
 					auxDesloca=aux2;
 					aux2=aux2->left;
 				}
 				else{
-					aux2->item->freq++;
+					aux2->item = devolverItem(palavra,aux2->item);
 					free(auxword->item);
 					free(auxword);
 					auxword=NULL;
@@ -55,7 +221,7 @@ void adicionaArvore(bTree **raiz, char *palavra)
 			if(!*raiz) *raiz = auxword;
 			else
 			{
-				if(strcmp(auxDesloca->item->chave,palavra)>0){
+				if(comparaPalavra(auxDesloca->item,palavra)<0){
 					if(auxDesloca==*raiz) (*raiz)->right = auxword;
 					else auxDesloca->right = auxword;
 				}
@@ -67,124 +233,35 @@ void adicionaArvore(bTree **raiz, char *palavra)
 		}
 	}
 }
-
-void adicionaArvoreFreq(bTree **raiz, char *palavra, bTree *raizaux){
-	bTree *auxratio = (bTree *) malloc(sizeof(bTree)), *aux = *raiz, *auxDesloca;
-	Item *auxItem=NULL, *auxItem2=NULL, *auxlista, *auxlista2;
-	if(!auxratio)printf("Não há espaço disponível!\n");
-	else{
-		
-		
-		while(strcmp(raizaux->item->chave, palavra)!=0)		//compara palavra na árvore de "dicionário"
-		{
-			if(strcmp(raizaux->item->chave, palavra)>0)raizaux=raizaux->right;
-			else raizaux=raizaux->left;
-		}
-		auxratio->item = raizaux->item;
-		while(aux){
-			auxDesloca=aux;
-			auxlista = auxDesloca->item;
-			while(auxlista && strcmp(raizaux->item->chave,auxlista->chave))
-			{
-				auxlista2 = auxlista;
-				auxlista = auxlista->prox;
-			}
-			if(auxlista && !strcmp(raizaux->item->chave,auxlista->chave))
-			{
-				if(auxlista == auxDesloca->item){
-					auxlista = auxDesloca->item;
-					auxDesloca->item = auxDesloca->item->prox;
-					//free(auxlista);
-				}
-				else{
-					auxlista = auxlista2;
-					auxlista2 = auxlista2->prox;
-					//free(auxlista);
-				}
-					
-			}
-			if(raizaux->item->freq > aux->item->freq)aux=aux->right;
-			else{
-				if(raizaux->item->freq < aux->item->freq)aux=aux->left;
-				else{
-					auxItem=auxDesloca->item;
-					//free(auxratio);
-					//auxItemRatio = (Item *) malloc(sizeof(Item));
-					while(auxItem && strcmp(auxItem->chave,raizaux->item->chave)<0){
-						auxItem2=auxItem;
-						auxItem=auxItem->prox;
-					}
-					if(auxItem)
-					{
-						if(auxItem == auxDesloca->item) auxDesloca->item = raizaux->item;
-						else auxItem2->prox = raizaux->item;
-						raizaux->item->prox = auxItem;		
-					}
-					else auxItem2->prox = raizaux->item;
-					break;
-				}
-			}
-			
-		}
-		if(!auxItem && !auxItem2){
-			auxratio->left=NULL;
-			auxratio->right=NULL;
-			if(!*raiz) *raiz = auxratio;
-			else{
-				if(auxratio->item->freq > auxDesloca->item->freq) auxDesloca->right= auxratio;
-				else auxDesloca->left = auxratio;
-			}
-		}
-		//else free(auxItem);
-	}
-}
-
-/*void montaArvore(bTree *raiz, int max, int vez)
-{
-	if(vez<=1)
-	{
-		for(int i=vez;i<max;i++) printf("| "); 
-		if(raiz)printf("\b-%s\n", raiz->item->chave);
-		else printf("\b-NULL\n");
-	}
+/*
+void adicionaArvoreFreq(bTree **raiz, char *palavra){
+	bTree *auxfreq= (bTree *)malloc(sizeof(bTree)), *aux2 = *raiz;
+	if(!auxfreq) printf("Não há espaço disponível!\n");
 	else
 	{
-		if(raiz)
+		auxfreq->item = insereItem(palavra);
+		while(aux2)
 		{
-			for(int i=vez;i<max;i++) printf("| ");
-			if(vez==max)printf("%s\n", raiz->item->chave);
-			else printf("\b-%s\n", raiz->item->chave);
-			if(raiz->left || raiz->right) montaArvore(raiz->left, max, (vez-1));
-			if(raiz->left || raiz->right) montaArvore(raiz->right, max, (vez-1));
+			if(verifica(auxfreq->item, palavra)) limpalista();	//futura função para remover o item da lista ligada
+			aux2 = aux2->prox;
 		}
+		auxfreq->left = NULL;
+		auxfreq->right= NULL;
+		if(*raiz) *raiz = auxfreq;
+		else aux2 = auxfreq;
 	}
 }
-
-void imprimeArvore(bTree *raiz, int max)
-{
-	//int *vetaux = (int *)calloc((max-1),sizeof(int));
-	montaArvore(raiz, max, max);
-}
-
-int *updateVB(int *vB, int h)
-{
-	int i;
-	
-	for(i=0; i<(h-1);i++){
-		if(vB[i]>0)printf("| ");
-		else printf("  ");
-	}
-}*/
-
+*/
 void procuraPalavra(bTree *raiz, char *palavra){
 	struct timeval antes , depois;
 	int h=1, diff;
 	
 	gettimeofday(&antes , NULL);
-	while(raiz && strcmp(raiz->item->chave,palavra))
+	while(raiz && comparaPalavra(raiz->item,palavra))
 	{
-		if(strcmp(raiz->item->chave,palavra)>0) raiz=raiz->right;
+		if(comparaPalavra(raiz->item,palavra)<0) raiz=raiz->right;
 		else raiz=raiz->left;
+		//sleep(1);
 		h++;
 	}
 	gettimeofday(&depois , NULL);
@@ -194,57 +271,79 @@ void procuraPalavra(bTree *raiz, char *palavra){
 	printf("Palavra: %s\n", raiz->item->chave);
 	printf("Frequencia: %d vez(es)\n", raiz->item->freq);
 	printf("Altura: %d\n", h);
-	printf("Tempo de execucao: %d ms\n", diff);
+	printf("Tempo de execucao: %d us\n", diff);
 }
 
-void salvaArquivo(bTree *raiz, char *palavra){//não terminada
-	FILE *p;
-	strcat(palavra,".dat");
-	p = fopen(palavra, "wb");
-	if(!p) printf("Erro na abertura do arquivo!\n");
-	else{
+void salvaArquivo(bTree *raiz,FILE *p){
+	if(raiz)
+	{
 		fwrite(raiz, sizeof(bTree), 1, p);
 		fwrite(raiz->item, sizeof(Item), 1, p);
-	}
-	fclose(p);
+		salvaArquivo(raiz->left,pont);
+		salvaArquivo(raiz->right,pont);
+	}	
 }
 
-void recuperaArquivo(bTree **raiz, char *palavra){//não terminada
-	FILE *p;
+void iniciaSalvaArquivo(bTree *raiz, char *palavra){//não terminada
+	FILE *pont;
 	strcat(palavra,".dat");
-	bTree *aux;
-	p = fopen(palavra, "rb");
-	if(!p) printf("Erro na abertura do arquivo!\n");
-	else{
+	pont = fopen(palavra, "wb");
+	if(!pont) printf("Erro na abertura do arquivo!\n");
+	else salvaArquivo(raiz,pont);
+	fclose(pont);
+}
+
+bTree *recuperaArquivo(FILE *p){
+	if(*raiz){
 		aux = (bTree *) malloc(sizeof(bTree));
-		aux->item = (Item *) malloc(sizeof(Item));
-		fread(aux, sizeof(bTree), 1, p);
+		fread(aux,sizeof(bTree),1,p);
+		aux->item = alocaItem();
 		fread(aux->item, sizeof(Item), 1, p);
 		*raiz = aux;
+		(*raiz)->left = recuperaArquivo(p);
+		(*raiz)->right = recuperaArquivo(p);
+		return aux;
 	}
-	fclose(p);
 }
 
-void trail(int lvl, int code){
+void iniciaRecuperaArquivo(bTree **raiz, char *palavra){//não terminada
+	FILE *pont;
+	strcat(palavra,".dat");
+	bTree *aux;
+	pont = fopen(palavra, "rb");
+	if(!pont) printf("Erro na abertura do arquivo!\n");
+	else{
+		aux = (bTree *) malloc(sizeof(bTree));
+		fread(aux,sizeof(bTree),1,pont);
+		aux->item = alocaItem();
+		fread(aux->item, sizeof(Item), 1, pont);
+		*raiz = aux;
+		(*raiz)->left = recuperaArquivo();
+		(*raiz)->right = recuperaArquivo();
+	}
+	fclose(pont);
+}
+
+void trail(int lvl, double code){
 	if (lvl) {
-		(code % 2) ? printf("|") : printf(" ");
-		trail(lvl - 1, (int) code/2);
+		((long long int)code % 2) ? printf("| ") : printf("  ");
+		trail(lvl - 1, (long long int) code/2);
 	}
 }
 
-void imprimeArvore(int lvl, int max, int code, int override, bTree *raiz){
+void imprimeArvore(int lvl, int max, double code, int override, bTree *raiz){
 	if(lvl<=max){
 		if (raiz) {
 			(override) ? trail(lvl, code + pow(2, lvl - 1)) : trail(lvl, code);
-			if(!lvl) printf("%s\n", raiz->item->chave);
-			else printf("-%s\n", raiz->item->chave);
+			if(!lvl) printf("%s (%i)\n", raiz->item->chave, raiz->item->freq);
+			else printf("\b- %s (%i)\n", raiz->item->chave, raiz->item->freq);
 			imprimeArvore(lvl + 1, max, code + pow(2, lvl), 0, raiz->left );
 			imprimeArvore(lvl + 1, max, code              , 1, raiz->right);
 		}
 		else{
 			(override) ? trail(lvl, code + pow(2, lvl - 1)) : trail(lvl, code);
-			printf("-NULL\n");
+			printf("\b- NULL\n");
 		}
 	}
-} 
+}
 

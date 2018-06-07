@@ -18,8 +18,33 @@ Item *insereItem(char *palavra){
 	return auxItem;
 }
 
+Item *alocaItem(){
+	Item *alocador = (Item *) malloc(sizeof(Item));
+	return alocador;
+}
+
+int comparaPalavra(Item *registro, char *palavra){
+	return strcmp(registro->chave, palavra);
+}
+
+int verifica(Item *registro, char *palavra){
+	Item *aux = registro, *aux2 = registro;
+	if(!registro) return 0;
+	if(!registro->prox)
+	while(aux)
+	{
+		if(!strcmp(aux->chave,palavra)){
+			aux2->prox = aux->prox;
+			free(aux);
+			return 1;
+		}
+		aux2=aux;
+		aux=aux->prox;
+	}
+}
+
 Item *devolverItem(char *palavra, Item *registro){
-	if(strcmp(palavra, registro->chave)) return registro;
-	registro->freq++;
+	if(strcmp(palavra, registro->chave))
+	else registro->freq++;
 	return registro;
 }
