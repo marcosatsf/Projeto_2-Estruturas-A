@@ -32,65 +32,57 @@ struct tipoArvore {
 typedef struct tipoArvore bTree;
 
 int contaN(char *vet, int pos);
+void printcomand();
 
 int main(int argc, char **argv)
 {
 	bTree *rootWord=NULL;
-	int n, vetctrl[6]={0};
-	char word[50];
+	bloco *prim = NULL;
+	int n,pNum, vetctrl[6]={0};
+	char word[50], nomeArq[50];
 	for(int i=1;i<argc;i++)
 		switch(argv[i][1])
 		{
 			case 'n':vetctrl[0]=1;
+			n = contaN(argv[i], 2);
 			break;
 			case 'w':vetctrl[1]=1;
+			strcpy(nomeArq, argv[i]+2);
 			break;
 			case 'r':vetctrl[2]=1;
+			strcpy(nomeArq, argv[i]+2);
 			break;
 			case 's':vetctrl[3]=1;
+			strcpy(nomeArq, argv[i]+2);
 			break;
 			case 'p':vetctrl[4]=1;
+			pNum = contaN(argv[i], 2);
 			break;
 			case 'b':vetctrl[5]=1;
 			break;
 		}
 	if(vetctrl[1]&&vetctrl[2])vetctrl[2]=0;
 	if(vetctrl[0]){
-		n = contaN(argv[i], 2);
-		while(scanf("%s", word) != EOF)
-		{
-			adicionaArvore(&rootWord, word);
-			//adicionaArvoreFreq(&rootRatio , word, rootWord);
+		if(vetctrl[2]) iniciaRecuperaArquivo(&rootWord, nomeArq);
+		else{
+			while(scanf("%s", word) != EOF){
+				adicionaArvore(&rootWord, word);
+				//adicionaArvoreFreq(&rootRatio , word, rootWord);
+			}
 		}
-		bloco *prim = NULL;
 		montaListas(rootWord, &prim);
 		//testalista(prim);
 		imprimeN(prim, n);
-		if(vetctrl[1])
-		{
-			salvaArquivo(rootWord, argv[i]+2);
-		}
-		if(vetctrl[2])
-		{
-			recuperaArquivo(&rootWord, argv[i]+2);
-		}
-		if(vetctrl[3])
-		{
-			procuraPalavra(rootWord, argv[i]+2);
-		}
-		if(vetctrl[4])
-		{
-			vetctrl[4]=1;
-			n = contaN(argv[i], 2);
-			//imprimeArvore(rootWord, n);
-			imprimeArvore(0,n,0,0,rootWord);
-		}
+		if(vetctrl[1]) iniciaSalvaArquivo(rootWord, nomeArq);
+		if(vetctrl[3]) procuraPalavra(rootWord, nomeArq);
+		if(vetctrl[4]) imprimeArvore(0,pNum,0,0,rootWord);
 		if(vetctrl[5])
 		{
-			//Funções de AVL
+			//Funções de AVL, provavelmente será necessário substituir o comando -n, entao só colocar a parte que executa o -n como um else 
 		}
 		
 	}
+	else printf("Nao foi encontrado o argumento -n.\n");
 	free(rootWord);
 	free(prim);
 
@@ -108,5 +100,14 @@ int contaN(char *vet, int pos)
 		num/=10;
 	}
 	return tot;
+}
+void printcomand(){
+	printf("Argumentos possiveis neste programa:\n");
+	printf("-nNUMERO < NOME_DO_ARQUIVO.txt: Devolve as palavras mais frequentes de um texto(obrigatorio para execucao);\n");
+	printf("-wNOME_DO_ARQUIVO: Escreve em um arquivo binario as palavras da tabela de simbolos e suas respectivas frequencias;\n");
+	printf("-rNOME_NO_ARQUIVO: Le de um arquivo binario as palavras e suas respectivas frequencias;\n");
+	printf("-sPALAVRA: Procura a PALAVRA na arvore, devolvendo sua altura, frequencia e o tempo de busca;\n");
+	printf("-b: Balanceia a arvore binaria;\n");
+	printf("-pNUMERO: Imprime a arvore binaria de altura NUMERO.\n");
 }
 

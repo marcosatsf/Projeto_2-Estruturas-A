@@ -4,7 +4,7 @@ index:
 	gcc -c ST.h
 	gcc -g -c ST.c -lm
 	gcc -g -c main.c
-	gcc -g -o ProjetoIndexador Item.o ST.o main.o -lm
+	gcc -g -o projeto2 Item.o ST.o main.o -lm
 	clear
 	echo "Compilado com sucesso!"
 clean:
@@ -13,5 +13,5 @@ clean:
 	rm -rf Item.o
 	rm -rf ST.o
 	rm -rf main.o
-	rm -rf ProjetoIndexador
+	rm -rf projeto2
 	clear

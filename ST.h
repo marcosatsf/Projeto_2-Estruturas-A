@@ -1,3 +1,5 @@
+#include<stdio.h>
+
 typedef struct tipoItem Item;
 typedef struct tipoArvore bTree;
 
@@ -9,8 +11,8 @@ void adicionaArvore(bTree **raiz, char *palavra);
 //int *updateVB(int *vB, int h);
 void procuraPalavra(bTree *raiz, char *palavra);
 void salvaArquivo(bTree *raiz,FILE *p);
-void iniciaSalvaArquivo(bTree *raiz, char *palavra);
-bTree *recuperaArquivo(FILE *p);
+void iniciaSalvaArquivo(bTree *raiz,char* palavra);
+void recuperaArquivo(bTree **raiz, bTree **alocada);
 void iniciaRecuperaArquivo(bTree **raiz, char *palavra);
 void trail(int lvl, double code);
 void imprimeArvore(int lvl, int max, double code, int override, bTree *raiz);

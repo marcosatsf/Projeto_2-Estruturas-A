@@ -261,30 +261,31 @@ void procuraPalavra(bTree *raiz, char *palavra){
 	{
 		if(comparaPalavra(raiz->item,palavra)<0) raiz=raiz->right;
 		else raiz=raiz->left;
-		//sleep(1);
 		h++;
 	}
 	gettimeofday(&depois , NULL);
 	
 	diff = ((depois.tv_sec - antes.tv_sec) * 1000000) + (depois.tv_usec - antes.tv_usec);
 	
+	if(raiz){
 	printf("Palavra: %s\n", raiz->item->chave);
 	printf("Frequencia: %d vez(es)\n", raiz->item->freq);
 	printf("Altura: %d\n", h);
 	printf("Tempo de execucao: %d us\n", diff);
+	}
+	else printf("A palavra %s nao foi encontrada!\n", raiz->item->chave);
 }
 
 void salvaArquivo(bTree *raiz,FILE *p){
 	if(raiz)
 	{
-		fwrite(raiz, sizeof(bTree), 1, p);
-		fwrite(raiz->item, sizeof(Item), 1, p);
-		salvaArquivo(raiz->left,pont);
-		salvaArquivo(raiz->right,pont);
+		escreveEmArquivo(raiz->item,&p);
+		salvaArquivo(raiz->left,p);
+		salvaArquivo(raiz->right,p);
 	}	
 }
 
-void iniciaSalvaArquivo(bTree *raiz, char *palavra){//não terminada
+void iniciaSalvaArquivo(bTree *raiz, char* palavra){
 	FILE *pont;
 	strcat(palavra,".dat");
 	pont = fopen(palavra, "wb");
@@ -293,35 +294,41 @@ void iniciaSalvaArquivo(bTree *raiz, char *palavra){//não terminada
 	fclose(pont);
 }
 
-bTree *recuperaArquivo(FILE *p){
-	if(*raiz){
-		aux = (bTree *) malloc(sizeof(bTree));
-		fread(aux,sizeof(bTree),1,p);
-		aux->item = alocaItem();
-		fread(aux->item, sizeof(Item), 1, p);
-		*raiz = aux;
-		(*raiz)->left = recuperaArquivo(p);
-		(*raiz)->right = recuperaArquivo(p);
-		return aux;
+void recuperaArquivo(bTree **raiz, bTree **alocada){
+	if(!*raiz) *raiz = *alocada;
+	else{
+		if(comparaPalavraRegistros((*raiz)->item,(*alocada)->item)<0)recuperaArquivo(&(*raiz)->right,&(*alocada));
+		else recuperaArquivo(&(*raiz)->left,&(*alocada));
 	}
 }
 
-void iniciaRecuperaArquivo(bTree **raiz, char *palavra){//não terminada
+void iniciaRecuperaArquivo(bTree **raiz, char *palavra){
 	FILE *pont;
 	strcat(palavra,".dat");
-	bTree *aux;
-	pont = fopen(palavra, "rb");
+	pont = fopen(palavra, "r+b");
 	if(!pont) printf("Erro na abertura do arquivo!\n");
 	else{
-		aux = (bTree *) malloc(sizeof(bTree));
-		fread(aux,sizeof(bTree),1,pont);
-		aux->item = alocaItem();
-		fread(aux->item, sizeof(Item), 1, pont);
-		*raiz = aux;
-		(*raiz)->left = recuperaArquivo();
-		(*raiz)->right = recuperaArquivo();
+		bTree *aux;
+		while(!feof(pont))
+		{
+			aux = (bTree *) malloc(sizeof(bTree));
+			if(!aux){
+				printf("Heap overflow!\n");
+				break;
+			}
+			aux->item = alocaItem();
+			if(!aux->item){
+				printf("Heap overflow!\n");
+				break;
+			}
+			aux->left=NULL,aux->right=NULL;
+			fread(aux->item, sizeof(Item), 1, pont);
+			recuperaArquivo(&(*raiz), &aux);
+			
+		}
+		fclose(pont);
 	}
-	fclose(pont);
+	
 }
 
 void trail(int lvl, double code){

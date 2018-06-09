@@ -27,6 +27,10 @@ int comparaPalavra(Item *registro, char *palavra){
 	return strcmp(registro->chave, palavra);
 }
 
+int comparaPalavraRegistros(Item *registro1, Item *registro2){
+	return strcmp(registro1->chave, registro2->chave);
+}
+
 int verifica(Item *registro, char *palavra){
 	Item *aux = registro, *aux2 = registro;
 	if(!registro) return 0;
@@ -44,7 +48,10 @@ int verifica(Item *registro, char *palavra){
 }
 
 Item *devolverItem(char *palavra, Item *registro){
-	if(strcmp(palavra, registro->chave))
-	else registro->freq++;
+	if(!strcmp(palavra, registro->chave)) registro->freq++;
 	return registro;
+}
+
+void escreveEmArquivo(Item *registro,FILE **f){
+	fwrite(registro, sizeof(Item), 1, *f);
 }
