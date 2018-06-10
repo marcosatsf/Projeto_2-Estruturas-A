@@ -69,7 +69,7 @@ void rotacaoRR(bTree **raiz)
 	(*raiz)->height = 1 + maior(alturaAVL ((*raiz)->left),
 				    alturaAVL ((*raiz)->right));
 	aux->height = 1 + maior(alturaAVL (aux->right), (*raiz)->height);
-	(*raiz) = aux;
+	*raiz = aux;
 }
 
 void rotacaoLL(bTree **raiz)
@@ -80,7 +80,7 @@ void rotacaoLL(bTree **raiz)
 	(*raiz)->height = 1 + maior(alturaAVL ((*raiz)->left),
 				    alturaAVL ((*raiz)->right));
 	aux->height = 1 + maior(alturaAVL (aux->left), (*raiz)->height);
-	(*raiz) = aux;
+	*raiz = aux;
 }
 
 void rotacaoRL(bTree **raiz)
@@ -100,7 +100,7 @@ int adicionaAVL(bTree **raiz, char *palavra)
 	//**********************
 	int result;
 	bTree *aux2 = *raiz, *auxword;
-	if(*raiz==NULL){
+	if((*raiz)==NULL){
 		bTree *auxword = (bTree *)malloc(sizeof(bTree));
 		if(!auxword) return -1;//printf("Não há espaço disponível!\n");
 		else
@@ -119,9 +119,9 @@ int adicionaAVL(bTree **raiz, char *palavra)
 			if((result = adicionaAVL (&(aux2->left), palavra))==1){
 				if(fatBalanceamento(aux2)>=2){
 					if(comparaPalavra(aux2->left->item,palavra)>0)
-						rotacaoLL(&(*raiz));
+						rotacaoLL(raiz);
 					else
-						rotacaoLR(&(*raiz));
+						rotacaoLR(raiz);
 				}
 			}
 		}

@@ -69,13 +69,12 @@ int main(int argc, char **argv)
 		if(vetctrl[0]){
 			if(vetctrl[2]) iniciaRecuperaArquivo(&rootWord, nomeArq);
 			else{
-				while(scanf("%s", word) != EOF){
-					if(vetctrl[5])
-						adicionaArvore(&rootWord, word);
-					else
+				if(vetctrl[5])
+					while(scanf("%s", word) != EOF)
 						insereAVL(&rootWord, word);
-					//adicionaArvoreFreq(&rootRatio , word, rootWord);
-				}
+				else
+					while(scanf("%s", word) != EOF)				
+						adicionaArvore(&rootWord, word);
 			}
 			montaListas(rootWord, &prim);
 			//testalista(prim);
