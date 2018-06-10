@@ -97,7 +97,6 @@ void rotacaoLR(bTree **raiz)
 
 int adicionaAVL(bTree **raiz, char *palavra)
 {
-	//**********************
 	int result;
 	bTree *aux2 = *raiz, *auxword;
 	if((*raiz)==NULL){
@@ -109,7 +108,7 @@ int adicionaAVL(bTree **raiz, char *palavra)
 			auxword->height = 0;
 			auxword->right = NULL;
 			auxword->left = NULL;
-			*raiz = aux2;
+			*raiz = auxword;
 			return 1;		
 		}
 	}
@@ -136,8 +135,10 @@ int adicionaAVL(bTree **raiz, char *palavra)
 					}
 				}
 			}
-			else
+			else{
+				aux2->item = devolverItem(palavra,aux2->item);
 				return 0;
+			}
 		}
 		aux2->height = maior(alturaAVL(aux2->left), alturaAVL(aux2->right))+1;
 		return result;
