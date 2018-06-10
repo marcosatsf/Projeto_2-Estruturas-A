@@ -17,6 +17,7 @@ struct tipoArvore {
 	struct tipoItem *item;
 	struct tipoArvore *left;
 	struct tipoArvore *right;
+	int height;
 };
 typedef struct tipoArvore bTree;
 

@@ -16,6 +16,7 @@ Projeto básico: __% concluído - Obs:
 #include <time.h>
 #include <string.h>
 #include "ST.h"
+#include "STb.h"
 #include "Item.h"
 
 struct tipoItem {
@@ -28,6 +29,7 @@ struct tipoArvore {
 	struct tipoItem *item;
 	struct tipoArvore *left;
 	struct tipoArvore *right;
+	int height;
 };
 typedef struct tipoArvore bTree;
 
@@ -62,31 +64,37 @@ int main(int argc, char **argv)
 			break;
 		}
 	if(vetctrl[1]&&vetctrl[2])vetctrl[2]=0;
-	if(vetctrl[0]){
-		if(vetctrl[2]) iniciaRecuperaArquivo(&rootWord, nomeArq);
-		else{
-			while(scanf("%s", word) != EOF){
-				adicionaArvore(&rootWord, word);
-				//adicionaArvoreFreq(&rootRatio , word, rootWord);
-			}
-		}
-		montaListas(rootWord, &prim);
-		//testalista(prim);
-		imprimeN(prim, n);
-		if(vetctrl[1]) iniciaSalvaArquivo(rootWord, nomeArq);
-		if(vetctrl[3]) procuraPalavra(rootWord, nomeArq);
-		if(vetctrl[4]) imprimeArvore(0,pNum,0,0,rootWord);
-		if(vetctrl[5])
-		{
-			//Funções de AVL, provavelmente será necessário substituir o comando -n, entao só colocar a parte que executa o -n como um else 
-		}
-		
-	}
-	else printf("Nao foi encontrado o argumento -n.\n");
-	free(rootWord);
-	free(prim);
 
-	return 0;
+	else{
+		if(vetctrl[0]){
+			if(vetctrl[2]) iniciaRecuperaArquivo(&rootWord, nomeArq);
+			else{
+				while(scanf("%s", word) != EOF){
+					if(vetctrl[5])
+						adicionaArvore(&rootWord, word);
+					else
+						insereAVL(&rootWord, word);
+					//adicionaArvoreFreq(&rootRatio , word, rootWord);
+				}
+			}
+			montaListas(rootWord, &prim);
+			//testalista(prim);
+			imprimeN(prim, n);
+			if(vetctrl[1]) iniciaSalvaArquivo(rootWord, nomeArq);
+			if(vetctrl[3]) procuraPalavra(rootWord, nomeArq);
+			if(vetctrl[4]) imprimeArvore(0,pNum,0,0,rootWord);
+			/*if(vetctrl[5])
+			{
+				//Funções de AVL, provavelmente será necessário substituir o comando -n, entao só colocar a parte que executa o -n como um else 
+			}*/
+		
+		}
+		else printf("Nao foi encontrado o argumento -n.\n");
+		free(rootWord);
+		free(prim);
+
+		return 0;
+	}
 }
 
 int contaN(char *vet, int pos)
