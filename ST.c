@@ -344,7 +344,7 @@ void imprimeArvore(int lvl, int max, double code, int override, bTree *raiz){
 		if (raiz) {
 			(override) ? trail(lvl, code + pow(2, lvl - 1)) : trail(lvl, code);
 			if(!lvl) printf("%s (%i)\n", raiz->item->chave, raiz->item->freq);
-			else printf("\b- %s (%i)\n", raiz->item->chave, raiz->item->freq);
+			else printf("\b- %s (%i)\n", raiz->item->chave, raiz->item->freq, raiz->height);
 			imprimeArvore(lvl + 1, max, code + pow(2, lvl), 0, raiz->left );
 			imprimeArvore(lvl + 1, max, code              , 1, raiz->right);
 		}

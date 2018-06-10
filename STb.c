@@ -66,8 +66,8 @@ void rotacaoRR(bTree **raiz)
 	bTree *aux = (*raiz)->right;
 	(*raiz)->right = aux->left;
 	aux->left = *raiz;
-	(*raiz)->height = 1 + maior(alturaAVL ((*raiz)->left),
-				    alturaAVL ((*raiz)->right));
+	(*raiz)->height = 1 + maior(alturaAVL ((*raiz)->right),
+				    alturaAVL ((*raiz)->left));
 	aux->height = 1 + maior(alturaAVL (aux->right), (*raiz)->height);
 	*raiz = aux;
 }
@@ -128,7 +128,7 @@ int adicionaAVL(bTree **raiz, char *palavra)
 			if(comparaPalavra(aux2->item,palavra)<0){
 				if((result = adicionaAVL (&(aux2->right), palavra))==1){
 					if(fatBalanceamento(aux2)>=2){
-						if(comparaPalavra(aux2->right->item,palavra)>0)
+						if(comparaPalavra(aux2->right->item,palavra)<0)
 							rotacaoRR(&(*raiz));
 						else
 							rotacaoRL(&(*raiz));
