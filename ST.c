@@ -17,6 +17,7 @@ struct tipoArvore {
 	struct tipoItem *item;
 	struct tipoArvore *left;
 	struct tipoArvore *right;
+	int height;
 };
 typedef struct tipoArvore bTree;
 
@@ -107,7 +108,7 @@ no **adicionaBloco(bloco **primeiro, int freq)
 		bloco *atual = (*primeiro);
 		bloco *aux2 = (*primeiro);
 		//int i = 0;
-		while (atual != NULL) {
+		while (atual != NULL && atual->freq) {
 			if (atual->freq > freq) {
 				if (atual != (*primeiro)) aux2 = aux2->proxBloco;
 				atual = atual->proxBloco;
