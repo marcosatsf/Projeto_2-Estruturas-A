@@ -65,29 +65,27 @@ int main(int argc, char **argv)
 		}
 	if(vetctrl[1]&&vetctrl[2])vetctrl[2]=0;
 
-	else{
-		if(vetctrl[0]){
-			if(vetctrl[2]) iniciaRecuperaArquivo(&rootWord, nomeArq);
-			else{
-				if(vetctrl[5])
-					while(scanf("%s", word) != EOF)
-						insereAVL(&rootWord, word);
-				else
-					while(scanf("%s", word) != EOF)				
-						adicionaArvore(&rootWord, word);
-			}
-			montaListas(rootWord, &prim);
-			//testalista(prim);
-			imprimeN(prim, n);
-			if(vetctrl[1]) iniciaSalvaArquivo(rootWord, nomeArq);
-			if(vetctrl[3]) procuraPalavra(rootWord, nomeArq);
-			if(vetctrl[4]) imprimeArvore(0,pNum,0,0,rootWord);
-			/*if(vetctrl[5])
-			{
-				//Funções de AVL, provavelmente será necessário substituir o comando -n, entao só colocar a parte que executa o -n como um else 
-			}*/
-		
+	if(vetctrl[0]){
+		if(vetctrl[2]) iniciaRecuperaArquivo(&rootWord, nomeArq);
+		else{
+			if(vetctrl[5])
+				while(scanf("%s", word) != EOF)
+					insereAVL(&rootWord, word);
+			else
+				while(scanf("%s", word) != EOF)				
+					adicionaArvore(&rootWord, word);
 		}
+		montaListas(rootWord, &prim);
+		//testalista(prim);
+		imprimeN(prim, n);
+		if(vetctrl[1]) iniciaSalvaArquivo(rootWord, nomeArq);
+		if(vetctrl[3]) procuraPalavra(rootWord, nomeArq);
+		if(vetctrl[4]) imprimeArvore(0,pNum,0,0,rootWord);
+		/*if(vetctrl[5])
+		{
+			//Funções de AVL, provavelmente será necessário substituir o comando -n, entao só colocar a parte que executa o -n como um else 
+		}*/
+
 		else printf("Nao foi encontrado o argumento -n.\n");
 		free(rootWord);
 		free(prim);
