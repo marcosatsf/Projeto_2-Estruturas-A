@@ -17,6 +17,7 @@ struct tipoArvore {
 	struct tipoItem *item;
 	struct tipoArvore *left;
 	struct tipoArvore *right;
+	int height;
 };
 typedef struct tipoArvore bTree;
 
@@ -107,7 +108,7 @@ no **adicionaBloco(bloco **primeiro, int freq)
 		bloco *atual = (*primeiro);
 		bloco *aux2 = (*primeiro);
 		//int i = 0;
-		while (atual != NULL) {
+		while (atual != NULL && atual->freq) {
 			if (atual->freq > freq) {
 				if (atual != (*primeiro)) aux2 = aux2->proxBloco;
 				atual = atual->proxBloco;
@@ -207,7 +208,7 @@ void adicionaArvore(bTree **raiz, char *palavra)
 					aux2=aux2->left;
 				}
 				else{
-					aux2->item->freq++;
+					aux2->item = devolverItem(palavra,aux2->item);
 					free(auxword->item);
 					free(auxword);
 					auxword=NULL;
@@ -257,49 +258,78 @@ void procuraPalavra(bTree *raiz, char *palavra){
 	int h=1, diff;
 	
 	gettimeofday(&antes , NULL);
-	while(raiz && strcmp(raiz->item->chave,palavra))
+	while(raiz && comparaPalavra(raiz->item,palavra))
 	{
-		if(strcmp(raiz->item->chave,palavra)<0) raiz=raiz->right;
+		if(comparaPalavra(raiz->item,palavra)<0) raiz=raiz->right;
 		else raiz=raiz->left;
-		//sleep(1);
 		h++;
 	}
 	gettimeofday(&depois , NULL);
 	
 	diff = ((depois.tv_sec - antes.tv_sec) * 1000000) + (depois.tv_usec - antes.tv_usec);
 	
+	if(raiz){
 	printf("Palavra: %s\n", raiz->item->chave);
 	printf("Frequencia: %d vez(es)\n", raiz->item->freq);
 	printf("Altura: %d\n", h);
 	printf("Tempo de execucao: %d us\n", diff);
+	}
+	else printf("A palavra %s nao foi encontrada!\n", raiz->item->chave);
 }
 
-void salvaArquivo(bTree *raiz, char *palavra){//não terminada
-	FILE *p;
-	strcat(palavra,".dat");
-	p = fopen(palavra, "wb");
-	if(!p) printf("Erro na abertura do arquivo!\n");
-	else{
-		fwrite(raiz, sizeof(bTree), 1, p);
-		fwrite(raiz->item, sizeof(Item), 1, p);
-	}
-	fclose(p);
+void salvaArquivo(bTree *raiz,FILE *p){
+	if(raiz)
+	{
+		escreveEmArquivo(raiz->item,&p);
+		salvaArquivo(raiz->left,p);
+		salvaArquivo(raiz->right,p);
+	}	
 }
 
-void recuperaArquivo(bTree **raiz, char *palavra){//não terminada
-	FILE *p;
+void iniciaSalvaArquivo(bTree *raiz, char* palavra){
+	FILE *pont;
 	strcat(palavra,".dat");
-	bTree *aux;
-	p = fopen(palavra, "rb");
-	if(!p) printf("Erro na abertura do arquivo!\n");
+	pont = fopen(palavra, "wb");
+	if(!pont) printf("Erro na abertura do arquivo!\n");
+	else salvaArquivo(raiz,pont);
+	fclose(pont);
+}
+
+void recuperaArquivo(bTree **raiz, bTree **alocada){
+	if(!*raiz) *raiz = *alocada;
 	else{
-		aux = (bTree *) malloc(sizeof(bTree));
-		aux->item = (Item *) malloc(sizeof(Item));
-		fread(aux, sizeof(bTree), 1, p);
-		fread(aux->item, sizeof(Item), 1, p);
-		*raiz = aux;
+		if(comparaPalavraRegistros((*raiz)->item,(*alocada)->item)<0)recuperaArquivo(&(*raiz)->right,&(*alocada));
+		else recuperaArquivo(&(*raiz)->left,&(*alocada));
 	}
-	fclose(p);
+}
+
+void iniciaRecuperaArquivo(bTree **raiz, char *palavra){
+	FILE *pont;
+	strcat(palavra,".dat");
+	pont = fopen(palavra, "r+b");
+	if(!pont) printf("Erro na abertura do arquivo!\n");
+	else{
+		bTree *aux;
+		while(!feof(pont))
+		{
+			aux = (bTree *) malloc(sizeof(bTree));
+			if(!aux){
+				printf("Heap overflow!\n");
+				break;
+			}
+			aux->item = alocaItem();
+			if(!aux->item){
+				printf("Heap overflow!\n");
+				break;
+			}
+			aux->left=NULL,aux->right=NULL;
+			fread(aux->item, sizeof(Item), 1, pont);
+			recuperaArquivo(&(*raiz), &aux);
+			
+		}
+		fclose(pont);
+	}
+	
 }
 
 void trail(int lvl, double code){
@@ -313,8 +343,8 @@ void imprimeArvore(int lvl, int max, double code, int override, bTree *raiz){
 	if(lvl<=max){
 		if (raiz) {
 			(override) ? trail(lvl, code + pow(2, lvl - 1)) : trail(lvl, code);
-			if(!lvl) printf("%s (%i)\n", raiz->item->chave, raiz->item->freq);
-			else printf("\b- %s (%i)\n", raiz->item->chave, raiz->item->freq);
+			if(!lvl) printf("%s\n", raiz->item->chave);
+			else printf("\b- %s\n", raiz->item->chave);
 			imprimeArvore(lvl + 1, max, code + pow(2, lvl), 0, raiz->left );
 			imprimeArvore(lvl + 1, max, code              , 1, raiz->right);
 		}

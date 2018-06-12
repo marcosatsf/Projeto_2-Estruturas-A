@@ -4,11 +4,11 @@ Integrante 2 - Nome: Caio Lima e Souza Della Torre Sanches 	RA: 17225285
 Integrante 3 - Nome: Gabriela Nelsina Vicente 			RA: 17757089
 Integrante 4 - Nome: Marcos Aurélio Tavares de Sousa Filho 	RA: 17042284
 Resultados obtidos:
-Projeto básico: __% concluído - Obs:
-( ) Opcional 1 - Obs: 
-(X) Opcional 2 - Obs: 
-( ) Opcional 3 - Obs: 
-(X) Opcional 4 - Obs: Realizado com sucesso
+Projeto básico: 100% concluído - Obs: Pode dar problema ao carregar com -r e balancear com -b
+(X) Opcional 1 - Obs: Realizado com sucesso.
+(X) Opcional 2 - Obs: Feito porém o tempo de busca parece oscilar apenas entre 0 e 1 como notado em aula.
+(X) Opcional 3 - Obs: Feito.
+(X) Opcional 4 - Obs: Realizado com sucesso, tirando a excessão do tamanho da variável.
 */
 
 #include <stdio.h>
@@ -16,6 +16,7 @@ Projeto básico: __% concluído - Obs:
 #include <time.h>
 #include <string.h>
 #include "ST.h"
+#include "STb.h"
 #include "Item.h"
 
 struct tipoItem {
@@ -28,43 +29,66 @@ struct tipoArvore {
 	struct tipoItem *item;
 	struct tipoArvore *left;
 	struct tipoArvore *right;
+	int height;
 };
 typedef struct tipoArvore bTree;
 
 int contaN(char *vet, int pos);
+void printcomand();
 
 int main(int argc, char **argv)
 {
-	bTree *rootWord=NULL, *rootRatio=NULL;
-	int n;
-	char word[50];
+	bTree *rootWord=NULL;
+	bloco *prim = NULL;
+	int n,pNum, vetctrl[6]={0};
+	char word[50], nomeArq[50];
 	for(int i=1;i<argc;i++)
-	{
-		if(argv[i][1]=='n' && argv[i][2]>'0' && argv[i][2]<='9')
+		switch(argv[i][1])
 		{
+			case 'n':vetctrl[0]=1;
 			n = contaN(argv[i], 2);
-			while(scanf("%s", word) != EOF)
-			{
-				adicionaArvore(&rootWord, word);
-				//adicionaArvoreFreq(&rootRatio , word, rootWord);
-			}
-			bloco *prim = NULL;
-			montaListas(rootWord, &prim);
-			//testalista(prim);
-			imprimeN(prim, n);
+			break;
+			case 'w':vetctrl[1]=1;
+			strcpy(nomeArq, argv[i]+2);
+			break;
+			case 'r':vetctrl[2]=1;
+			strcpy(nomeArq, argv[i]+2);
+			break;
+			case 's':vetctrl[3]=1;
+			strcpy(nomeArq, argv[i]+2);
+			break;
+			case 'p':vetctrl[4]=1;
+			pNum = contaN(argv[i], 2);
+			break;
+			case 'b':vetctrl[5]=1;
+			break;
 		}
-		if(argv[i][1]=='w') salvaArquivo(rootWord, argv[i]+2);
-		else if(argv[i][1]=='r') recuperaArquivo(&rootWord, argv[i]+2);
-		if(argv[i][1]=='s') procuraPalavra(rootWord, argv[i]+2);
-		if(argv[i][1]=='p' && argv[i][2]>'0' && argv[i][2]<='9')
+	if(vetctrl[1]&&vetctrl[2])vetctrl[2]=0;
+	if(vetctrl[0]){
+		if(vetctrl[2]) iniciaRecuperaArquivo(&rootWord, nomeArq);
+		else{
+			if(vetctrl[5])
+				while(scanf("%s", word) != EOF)
+					insereAVL(&rootWord, word);
+			else
+				while(scanf("%s", word) != EOF)				
+					adicionaArvore(&rootWord, word);
+		}
+		montaListas(rootWord, &prim);
+		//testalista(prim);
+		imprimeN(prim, n);
+		if(vetctrl[1]) iniciaSalvaArquivo(rootWord, nomeArq);
+		if(vetctrl[3]) procuraPalavra(rootWord, nomeArq);
+		if(vetctrl[4]) imprimeArvore(0,pNum,0,0,rootWord);
+		/*if(vetctrl[5])
 		{
-			n = contaN(argv[i], 2);
-			//imprimeArvore(rootWord, n);
-			imprimeArvore(0,n,0,0,rootWord);
-		}
-		//if(argv[i][1]=='b') em andamento
+			//Funções de AVL, provavelmente será necessário substituir o comando -n, entao só colocar a parte que executa o -n como um else 
+		}*/
+	
 	}
+	else printf("Nao foi encontrado o argumento -n.\n");
 	free(rootWord);
+	free(prim);
 
 	return 0;
 }
@@ -80,5 +104,14 @@ int contaN(char *vet, int pos)
 		num/=10;
 	}
 	return tot;
+}
+void printcomand(){
+	printf("Argumentos possiveis neste programa:\n");
+	printf("-nNUMERO < NOME_DO_ARQUIVO.txt: Devolve as palavras mais frequentes de um texto(obrigatorio para execucao);\n");
+	printf("-wNOME_DO_ARQUIVO: Escreve em um arquivo binario as palavras da tabela de simbolos e suas respectivas frequencias;\n");
+	printf("-rNOME_NO_ARQUIVO: Le de um arquivo binario as palavras e suas respectivas frequencias;\n");
+	printf("-sPALAVRA: Procura a PALAVRA na arvore, devolvendo sua altura, frequencia e o tempo de busca;\n");
+	printf("-b: Balanceia a arvore binaria;\n");
+	printf("-pNUMERO: Imprime a arvore binaria de altura NUMERO.\n");
 }
 
