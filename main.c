@@ -4,7 +4,7 @@ Integrante 2 - Nome: Caio Lima e Souza Della Torre Sanches 	RA: 17225285
 Integrante 3 - Nome: Gabriela Nelsina Vicente 			RA: 17757089
 Integrante 4 - Nome: Marcos Aurélio Tavares de Sousa Filho 	RA: 17042284
 Resultados obtidos:
-Projeto básico: 100% concluído - Obs: Pode dar problema ao carregar com -r e balancear com -b
+Projeto básico: 100% concluído - Obs: Pode dar problema ao salvar com -w estando com a árvore balanceada
 (X) Opcional 1 - Obs: Realizado com sucesso.
 (X) Opcional 2 - Obs: Feito porém o tempo de busca parece oscilar apenas entre 0 e 1 como notado em aula.
 (X) Opcional 3 - Obs: Feito.
